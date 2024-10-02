@@ -3,7 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { AddressEntity } from '../blocks/entities/address';
 import { Repository } from 'typeorm';
 import { BalanceDto } from './dto/balance.dto';
-import { plainToClass } from 'class-transformer';
+import { plainToClass, plainToInstance } from 'class-transformer';
 
 @Injectable()
 export class BalanceService {
@@ -14,6 +14,8 @@ export class BalanceService {
 
   async getBalanceForTheAddress(addressId: string) {
     const address = await this.addressRepository.findOneBy({ id: addressId });
-    return plainToClass(BalanceDto, address);
+    return plainToInstance(BalanceDto, address, { 
+      excludeExtraneousValues: true  // Ensure only exposed properties are included
+    });
   }
 }

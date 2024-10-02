@@ -7,7 +7,7 @@ import {
 } from 'typeorm';
 import { AddressEntity } from './address';
 import { TransactionEntity } from './transaction';
-import { Exclude } from 'class-transformer';
+import { Exclude, Expose, Transform } from 'class-transformer';
 
 @Entity({ schema: 'main', name: 'output' })
 export class OutputEntity {
@@ -16,10 +16,16 @@ export class OutputEntity {
   id: string;
   @Column()
   @JoinColumn()
+  @Transform(({ obj }) => obj.address)
+  @Expose()
   addressId: string;
   @Exclude()
-  @ManyToOne(() => AddressEntity, (address) => address.outputs)
+  @ManyToOne(() => AddressEntity, (address) => address.outputs, {
+    cascade: true,  // Cascade save operations to related address
+    eager: true
+  })
   address: AddressEntity;
+  @Expose()
   @Column({ nullable: false })
   value: number;
   @Exclude()

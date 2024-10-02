@@ -53,13 +53,17 @@ export class RollbackService {
       },
     );
     for (const address of requiredEnts.addresses) {
-      address.value -= requiredEnts.inputs.find(
-        (i) => i.addressId === address.id,
-      ).value;
-      address.value += requiredEnts.outputs.find(
-        (o) => o.addressId === address.id,
-      ).value;
+      const inputs = requiredEnts.inputs.filter((i) => i.addressId === address.id);
+      if(inputs?.length > 0) {
+        address.value -= inputs.reduce((p, c) => p+c.value,0);
+      }
+      const outputs = requiredEnts.outputs.filter((o) => o.addressId === address.id);
+      if(outputs?.length > 0) {
+        address.value += outputs.reduce((p, c) => p+c.value,0);
+      }
     }
+
+    await this.addressRepository.save(requiredEnts.addresses);
     await this.addressRepository.update({}, { height: height });
     await this.blockRepository.remove(blocks);
   }

@@ -14,6 +14,6 @@ export class BlockDto {
   @IsPositive()
   @IsHeightSequential()
   height: number;
-  // @IsEqualInputOutputSums()
+  @IsEqualInputOutputSums()
   transactions: Array<TransactionDto>;
 }

@@ -27,9 +27,13 @@ export class IsHeightSequentialValidator
 
   async validate(value: number) {
     // Fetch data from the cache
-    this.cacheManager = await getInstance().resolve(CACHE_MANAGER);
-    const dataSource = await getInstance().get(DataSource);
-    this.blockRepository = dataSource.getRepository(BlockEntity);
+    if(!this.cacheManager) {
+      this.cacheManager = await getInstance().get<Cache>(CACHE_MANAGER);
+    }
+    if(!this.blockRepository) {
+      const dataSource = await getInstance().get(DataSource);
+      this.blockRepository = dataSource.getRepository(BlockEntity);
+    }
     let cachedValue = await this.cacheManager.get<number>(CURRENT_HIGHT_CACHE);
     if (typeof cachedValue === 'undefined') {
       cachedValue = (await this.blockRepository.findOneBy({ current: true }))

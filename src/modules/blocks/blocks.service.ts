@@ -8,7 +8,7 @@ import { AddressEntity } from './entities/address';
 import { BlockDto } from './dtos/block.dto';
 import { In, Repository } from 'typeorm';
 import { plainToClass, plainToInstance } from 'class-transformer';
-import { PREVIOUS_OUTPUTS } from './constants/constants';
+import { CURRENT_HIGHT_CACHE, PREVIOUS_OUTPUTS } from './constants/constants';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { Cache } from 'cache-manager';
 
@@ -34,21 +34,26 @@ export class BlocksService {
       PREVIOUS_OUTPUTS + blockDto.height,
     )) as OutputEntity[];
 
+    let inputOutputAddresses = [];
     const addressesIds = transactions
       .map((t) => {
         const transEnt = plainToClass(TransactionEntity, t);
         transEnt.block = blockEntity;
-        const outputs = plainToInstance(OutputEntity, t.outputs);
+        const outputs =  plainToInstance(OutputEntity, t.outputs);
         outputs.forEach((o, i) => {
           o.transaction = transEnt;
           o.index = i;
         });
+        transEnt.outputs = outputs;
+        transEnt.inputs = [];
         for (const input of t.inputs) {
           const inputEnt = plainToClass(InputEntity, input);
           inputEnt.transaction = transEnt;
           inputEnt.output = previousOutputs.find(
             (oe) => oe.transactionId === input.txId && oe.index === input.index,
           );
+          inputEnt.output.addressId;
+          inputOutputAddresses.push(inputEnt.output.addressId);
           transEnt.inputs.push(inputEnt);
         }
         blockEntity.transactions.push(transEnt);
@@ -57,30 +62,44 @@ export class BlocksService {
       .flat()
       .map((o) => o.address);
     const existingAddresses = await this.addressRepository.findBy({
-      id: In(addressesIds),
+      id: In(addressesIds.concat(inputOutputAddresses)),
     });
     if (existingAddresses?.length > 0) {
       addresses.push(...existingAddresses);
     }
     const newAddressses = addressesIds
       .filter((id) => !addresses.some((a) => a.id === id))
-      .map((id) => ({ id, height: blockDto.height }) as AddressEntity);
+      .map((id) => ({ id, height: blockDto.height, value: 0 }) as AddressEntity);
     if (newAddressses.length > 0) {
       addresses.push(...newAddressses);
     }
 
+    let inputAffectedAddres;
+
     blockEntity.transactions.forEach((t) => {
       if (t.inputs?.length > 0) {
+        inputAffectedAddres = [];
         t.inputs.forEach((i) => {
-          addresses.find((a) => a.id === i.output.addressId).value -=
-            i.output.value;
+          const inputAffectedAddr = addresses.find((a) => a.id === i.output.addressId);
+          inputAffectedAddr.value -= i.output.value;
+          inputAffectedAddr.height = blockDto.height;
+          inputAffectedAddres.push(inputAffectedAddr);
         });
       }
-      t.outputs.forEach((o) => {
-        o.address = addresses.find((a) => a.id === o.addressId);
-        o.address.value += o.value;
-      });
+      if (t.outputs?.length > 0) {
+        t.outputs.forEach((o) => {
+          o.address = addresses.find((a) => a.id === o.addressId);
+          o.address.value += o.value;
+        });
+      }
     });
+    await this.blockRepository.update({}, { current: false });
     await this.blockRepository.save(blockEntity);
+    if(inputAffectedAddres && inputAffectedAddres.length > 0) {
+      await this.addressRepository.save(inputAffectedAddres);
+    }
+    let currentHeight = await this.cacheManager.get<number>(CURRENT_HIGHT_CACHE) ?? 0;
+    await this.cacheManager.set(CURRENT_HIGHT_CACHE, ++currentHeight, 0);
+    currentHeight = await this.cacheManager.get<number>(CURRENT_HIGHT_CACHE);
   }
 }

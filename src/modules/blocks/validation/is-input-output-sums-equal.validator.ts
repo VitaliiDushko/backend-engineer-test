@@ -8,10 +8,11 @@ import { OutputEntity } from '../entities/output';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { Cache } from 'cache-manager';
-import { In, Repository } from 'typeorm';
+import { DataSource, In, Repository } from 'typeorm';
 import { BlockDto } from '../dtos/block.dto';
 import { PREVIOUS_OUTPUTS } from '../constants/constants';
 import { TransactionDto } from '../dtos/transaction.dto';
+import { getInstance } from 'src/main';
 
 @Injectable()
 @ValidatorConstraint({ async: true })
@@ -25,6 +26,13 @@ export class IsInputOutputSumsEqualValidator
   ) {}
 
   async validate(value: Array<TransactionDto>, validationArguments: ValidationArguments) {
+    if(!this.cacheManager) {
+      this.cacheManager = await getInstance().get<Cache>(CACHE_MANAGER);
+    }
+    if(!this.outputRepository) {
+      const dataSource = await getInstance().get(DataSource);
+      this.outputRepository = dataSource.getRepository(OutputEntity);
+    }
     let valid = true;
     const inputs = value.map((t) => t.inputs).flat();
     if (inputs?.length > 0) {

@@ -9,7 +9,10 @@ export class BlockEntity {
   @Column()
   height: number;
   @Exclude()
-  @OneToMany(() => TransactionEntity, (transaction) => transaction.block)
+  @OneToMany(() => TransactionEntity, (transaction) => transaction.block, {
+    cascade: true,  // Cascade save operations to related address
+    eager: true
+  })
   transactions: TransactionEntity[];
   @Exclude()
   @Column({ nullable: false, default: true })
