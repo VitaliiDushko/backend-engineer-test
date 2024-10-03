@@ -1,7 +1,7 @@
 import { Entity, Column, PrimaryColumn, OneToMany } from 'typeorm';
 import { OutputEntity } from './output';
 
-@Entity({ schema: 'main', name: 'address' })
+@Entity({ name: 'address' })
 export class AddressEntity {
   @PrimaryColumn()
   id: string;

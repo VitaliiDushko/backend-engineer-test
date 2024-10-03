@@ -16,11 +16,16 @@ import { TransactionEntity } from './modules/blocks/entities/transaction';
   imports: [
     TypeOrmModule.forRoot({
       type: 'postgres',
-      host: 'localhost',
-      port: 5432,
-      username: 'postgres',
-      password: 'Vitalia1507',
-      database: 'backend_engineer_test',
+      host: 'db',
+      port: +process.env.POSTGRES_DB_PORT || 5432,
+      username: process.env.POSTGRES_USER || 'vitaliidushko',
+      password: process.env.POSTGRES_PASSWORD || 'Vitalia1507',
+      database: process.env.POSTGRES_DB || 'engineer_test_db',
+      synchronize: true, // Enable this for automatic schema sync (development only)
+      retryAttempts: 50, // Number of retry attempts if connection fails
+      retryDelay: 3000, // Delay between retries (in milliseconds)
+      // Enable verbose logging
+      logging: ['query', 'error', 'schema', 'warn', 'info', 'log'],
       entities: [
         BlockEntity,
         InputEntity,
@@ -28,7 +33,6 @@ import { TransactionEntity } from './modules/blocks/entities/transaction';
         AddressEntity,
         TransactionEntity,
       ],
-      synchronize: true,
     }),
     CacheModule.register(),
     BalanceModule,

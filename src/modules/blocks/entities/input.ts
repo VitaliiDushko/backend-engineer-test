@@ -10,7 +10,7 @@ import { OutputEntity } from './output';
 import { TransactionEntity } from './transaction';
 import { Exclude } from 'class-transformer';
 
-@Entity({ schema: 'main', name: 'input' })
+@Entity({ name: 'input' })
 export class InputEntity {
   @Exclude()
   @PrimaryGeneratedColumn('uuid')

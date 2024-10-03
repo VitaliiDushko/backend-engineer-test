@@ -12,7 +12,7 @@ import { Repository } from 'typeorm';
 import { BlockEntity } from '../entities/block';
 import { Injectable, Inject } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { getInstance } from 'src/main';
+import { getInstance } from '../../../main';
 import { DataSource } from 'typeorm';
 
 @Injectable()

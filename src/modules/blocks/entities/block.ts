@@ -2,7 +2,7 @@ import { Column, Entity, OneToMany, PrimaryColumn } from 'typeorm';
 import { TransactionEntity } from './transaction';
 import { Exclude } from 'class-transformer';
 
-@Entity({ schema: 'main', name: 'block' })
+@Entity({ name: 'block' })
 export class BlockEntity {
   @PrimaryColumn()
   id: string;

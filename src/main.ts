@@ -1,5 +1,6 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
+import { Logger } from '@nestjs/common';
 import {
   FastifyAdapter,
   NestFastifyApplication,
@@ -15,7 +16,11 @@ async function bootstrap() {
     new FastifyAdapter(),
   );
   app.useGlobalPipes(new ValidationPipe());
-  await app.listen(3000);
+  try {
+    await app.listen(3000);
+  } catch (err) {
+    Logger.error('Failed to start NestJS application:', err);
+  }
 }
 
 export const getInstance = () => {

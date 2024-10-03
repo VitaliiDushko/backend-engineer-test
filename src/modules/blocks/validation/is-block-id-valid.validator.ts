@@ -7,7 +7,7 @@ import {
 } from 'class-validator';
 import { Injectable } from '@nestjs/common';
 import { BlockDto } from '../dtos/block.dto';
-import * as crypto from 'crypto';
+import { SHA256 } from 'bun';
 
 @Injectable()
 @ValidatorConstraint({ async: true })
@@ -15,7 +15,7 @@ export class IsBlockIdValidValidator implements ValidatorConstraintInterface {
   async validate(value: string, validationArguments?: ValidationArguments) {
     const blockDto = validationArguments.object as BlockDto;
     // Create a new SHA256 hash instance
-    const testHash = crypto.createHash('sha256');
+    const testHash = new SHA256();
 
     // Update the hash with data (in this case, a string)
     testHash.update(
@@ -24,7 +24,7 @@ export class IsBlockIdValidValidator implements ValidatorConstraintInterface {
 
     const testDigest = testHash.digest('hex');
 
-    const idHash = crypto.createHash('sha256');
+    const idHash = new SHA256();
 
     idHash.update(value);
 

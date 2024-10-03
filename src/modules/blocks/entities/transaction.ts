@@ -4,7 +4,7 @@ import { OutputEntity } from './output';
 import { BlockEntity } from './block';
 import { Exclude } from 'class-transformer';
 
-@Entity({ schema: 'main', name: 'transaction' })
+@Entity({ name: 'transaction' })
 export class TransactionEntity {
   @PrimaryColumn()
   id: string;

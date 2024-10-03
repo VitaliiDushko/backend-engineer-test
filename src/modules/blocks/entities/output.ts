@@ -9,7 +9,7 @@ import { AddressEntity } from './address';
 import { TransactionEntity } from './transaction';
 import { Exclude, Expose, Transform } from 'class-transformer';
 
-@Entity({ schema: 'main', name: 'output' })
+@Entity({ name: 'output' })
 export class OutputEntity {
   @Exclude()
   @PrimaryGeneratedColumn('uuid')

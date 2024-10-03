@@ -12,7 +12,7 @@ import { DataSource, In, Repository } from 'typeorm';
 import { BlockDto } from '../dtos/block.dto';
 import { PREVIOUS_OUTPUTS } from '../constants/constants';
 import { TransactionDto } from '../dtos/transaction.dto';
-import { getInstance } from 'src/main';
+import { getInstance } from '../../../main';
 
 @Injectable()
 @ValidatorConstraint({ async: true })
