@@ -22,15 +22,16 @@ export class IsHeightSequentialValidator
 {
   constructor(
     @Inject(CACHE_MANAGER) private cacheManager: Cache,
-    @InjectRepository(BlockEntity) private blockRepository: Repository<BlockEntity>,
+    @InjectRepository(BlockEntity)
+    private blockRepository: Repository<BlockEntity>,
   ) {}
 
   async validate(value: number) {
     // Fetch data from the cache
-    if(!this.cacheManager) {
+    if (!this.cacheManager) {
       this.cacheManager = await getInstance().get<Cache>(CACHE_MANAGER);
     }
-    if(!this.blockRepository) {
+    if (!this.blockRepository) {
       const dataSource = await getInstance().get(DataSource);
       this.blockRepository = dataSource.getRepository(BlockEntity);
     }

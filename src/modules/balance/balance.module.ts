@@ -7,6 +7,6 @@ import { AddressEntity } from '../blocks/entities/address';
 @Module({
   imports: [TypeOrmModule.forFeature([AddressEntity])],
   controllers: [BalanceController],
-  providers: [BalanceService]
+  providers: [BalanceService],
 })
 export class BalanceModule {}

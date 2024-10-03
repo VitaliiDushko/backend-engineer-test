@@ -25,11 +25,14 @@ export class IsInputOutputSumsEqualValidator
     private outputRepository: Repository<OutputEntity>,
   ) {}
 
-  async validate(value: Array<TransactionDto>, validationArguments: ValidationArguments) {
-    if(!this.cacheManager) {
+  async validate(
+    value: Array<TransactionDto>,
+    validationArguments: ValidationArguments,
+  ) {
+    if (!this.cacheManager) {
       this.cacheManager = await getInstance().get<Cache>(CACHE_MANAGER);
     }
-    if(!this.outputRepository) {
+    if (!this.outputRepository) {
       const dataSource = await getInstance().get(DataSource);
       this.outputRepository = dataSource.getRepository(OutputEntity);
     }

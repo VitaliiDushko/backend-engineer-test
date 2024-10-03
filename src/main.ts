@@ -10,7 +10,7 @@ import { INestApplication } from '@nestjs/common';
 let app: INestApplication;
 
 async function bootstrap() {
- app = await NestFactory.create<NestFastifyApplication>(
+  app = await NestFactory.create<NestFastifyApplication>(
     AppModule,
     new FastifyAdapter(),
   );

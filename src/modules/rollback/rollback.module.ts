@@ -4,10 +4,21 @@ import { RollbackController } from './rollback.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { BlockEntity } from '../blocks/entities/block';
 import { AddressEntity } from '../blocks/entities/address';
+import { TransactionEntity } from '../blocks/entities/transaction';
+import { OutputEntity } from '../blocks/entities/output';
+import { InputEntity } from '../blocks/entities/input';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([BlockEntity, AddressEntity])],
+  imports: [
+    TypeOrmModule.forFeature([
+      BlockEntity,
+      AddressEntity,
+      TransactionEntity,
+      OutputEntity,
+      InputEntity,
+    ]),
+  ],
   providers: [RollbackService],
-  controllers: [RollbackController]
+  controllers: [RollbackController],
 })
 export class RollbackModule {}

@@ -34,12 +34,12 @@ export class BlocksService {
       PREVIOUS_OUTPUTS + blockDto.height,
     )) as OutputEntity[];
 
-    let inputOutputAddresses = [];
+    const inputOutputAddresses = [];
     const addressesIds = transactions
       .map((t) => {
         const transEnt = plainToClass(TransactionEntity, t);
         transEnt.block = blockEntity;
-        const outputs =  plainToInstance(OutputEntity, t.outputs);
+        const outputs = plainToInstance(OutputEntity, t.outputs);
         outputs.forEach((o, i) => {
           o.transaction = transEnt;
           o.index = i;
@@ -52,7 +52,6 @@ export class BlocksService {
           inputEnt.output = previousOutputs.find(
             (oe) => oe.transactionId === input.txId && oe.index === input.index,
           );
-          inputEnt.output.addressId;
           inputOutputAddresses.push(inputEnt.output.addressId);
           transEnt.inputs.push(inputEnt);
         }
@@ -69,7 +68,9 @@ export class BlocksService {
     }
     const newAddressses = addressesIds
       .filter((id) => !addresses.some((a) => a.id === id))
-      .map((id) => ({ id, height: blockDto.height, value: 0 }) as AddressEntity);
+      .map(
+        (id) => ({ id, height: blockDto.height, value: 0 }) as AddressEntity,
+      );
     if (newAddressses.length > 0) {
       addresses.push(...newAddressses);
     }
@@ -80,7 +81,9 @@ export class BlocksService {
       if (t.inputs?.length > 0) {
         inputAffectedAddres = [];
         t.inputs.forEach((i) => {
-          const inputAffectedAddr = addresses.find((a) => a.id === i.output.addressId);
+          const inputAffectedAddr = addresses.find(
+            (a) => a.id === i.output.addressId,
+          );
           inputAffectedAddr.value -= i.output.value;
           inputAffectedAddr.height = blockDto.height;
           inputAffectedAddres.push(inputAffectedAddr);
@@ -95,10 +98,11 @@ export class BlocksService {
     });
     await this.blockRepository.update({}, { current: false });
     await this.blockRepository.save(blockEntity);
-    if(inputAffectedAddres && inputAffectedAddres.length > 0) {
+    if (inputAffectedAddres && inputAffectedAddres.length > 0) {
       await this.addressRepository.save(inputAffectedAddres);
     }
-    let currentHeight = await this.cacheManager.get<number>(CURRENT_HIGHT_CACHE) ?? 0;
+    let currentHeight =
+      (await this.cacheManager.get<number>(CURRENT_HIGHT_CACHE)) ?? 0;
     await this.cacheManager.set(CURRENT_HIGHT_CACHE, ++currentHeight, 0);
     currentHeight = await this.cacheManager.get<number>(CURRENT_HIGHT_CACHE);
   }

@@ -21,8 +21,8 @@ export class OutputEntity {
   addressId: string;
   @Exclude()
   @ManyToOne(() => AddressEntity, (address) => address.outputs, {
-    cascade: true,  // Cascade save operations to related address
-    eager: true
+    cascade: true, // Cascade save operations to related address
+    eager: true,
   })
   address: AddressEntity;
   @Expose()

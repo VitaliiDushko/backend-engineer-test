@@ -26,14 +26,14 @@ import { TransactionEntity } from './modules/blocks/entities/transaction';
         InputEntity,
         OutputEntity,
         AddressEntity,
-        TransactionEntity
+        TransactionEntity,
       ],
       synchronize: true,
     }),
     CacheModule.register(),
     BalanceModule,
     BlocksModule,
-    RollbackModule
+    RollbackModule,
   ],
   controllers: [AppController],
   providers: [AppService],

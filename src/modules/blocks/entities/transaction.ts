@@ -13,14 +13,14 @@ export class TransactionEntity {
   block: BlockEntity;
   @Exclude()
   @OneToMany(() => InputEntity, (input) => input.transaction, {
-    cascade: true,  // Cascade save operations to related address
-    eager: true
+    cascade: true, // Cascade save operations to related address
+    eager: true,
   })
   inputs: InputEntity[];
   @Exclude()
   @OneToMany(() => OutputEntity, (output) => output.transaction, {
-    cascade: true,  // Cascade save operations to related address
-    eager: true
+    cascade: true, // Cascade save operations to related address
+    eager: true,
   })
   outputs: OutputEntity[];
 }

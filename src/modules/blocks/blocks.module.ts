@@ -14,7 +14,13 @@ import { IsInputOutputSumsEqualValidator } from './validation/is-input-output-su
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([BlockEntity, AddressEntity, TransactionEntity, InputEntity, OutputEntity]),
+    TypeOrmModule.forFeature([
+      BlockEntity,
+      AddressEntity,
+      TransactionEntity,
+      InputEntity,
+      OutputEntity,
+    ]),
     CacheModule.register(),
   ],
   controllers: [BlocksController],
